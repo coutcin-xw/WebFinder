@@ -210,7 +210,7 @@ func SplitChar76(braw []byte) []byte {
 	return buffer.Bytes()
 }
 
-func FingersEngine(url string, body []byte) string {
+func FingersEngine(url string, body []byte) []string {
 	engine, err := fingers.NewEngine()
 	if err != nil {
 		panic(err)
@@ -218,17 +218,16 @@ func FingersEngine(url string, body []byte) string {
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Errorf("错误: %v", err)
-		return ""
+		return []string{}
 	}
-	log.Debugf("Get:%+v", resp)
 	resp.Body = io.NopCloser(bytes.NewReader(body))
 	content, _ := nettools.ReadResponse(resp, false)
 	frames, err := engine.DetectContent(content)
 	if err != nil {
 		log.Errorf("错误: %v", err)
-		return ""
+		return []string{}
 	}
-	return frames.String()
+	return FingersFormat(frames.String())
 }
 func FingersEngine2(urls string) string {
 	engine, err := fingers.NewEngine()

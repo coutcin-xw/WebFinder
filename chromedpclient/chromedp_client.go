@@ -29,7 +29,7 @@ var requestMap sync.Map
 var wg sync.WaitGroup
 
 // RunChromedpTask 运行 chromedp 任务，获取页面渲染后的 HTML 内容并写入文件
-func RunChromedpTask(url string, timeout time.Duration) (string, string, error) {
+func RunChromedpTask(url string, timeout time.Duration) (string, string, []string, error) {
 	// 自定义 Chrome 启动选项
 	opts = append(chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.DisableGPU,                              // 禁用 GPU 加速
@@ -62,9 +62,10 @@ func RunChromedpTask(url string, timeout time.Duration) (string, string, error) 
 		chromedp.OuterHTML("html", &pageHTML),
 		chromedp.Title(&pageTitle), // 获取页面标题
 	); err != nil {
-		return "", "", err
+		return "", "", []string{}, err
 	}
-	return pageTitle, pageHTML, nil
+	fingers := utils.FingersEngine(url, []byte(pageHTML))
+	return pageTitle, pageHTML, fingers, nil
 }
 
 // 监听网络事件
