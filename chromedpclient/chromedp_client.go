@@ -57,15 +57,13 @@ func RunChromedpTask(url string, timeout time.Duration) (string, string, error) 
 	var pageHTML string
 	if err := chromedp.Run(TaskCtx,
 		network.Enable(),
-		chromedp.Navigate(url),     // 导航到指定的 URL
-		chromedp.Sleep(timeout),    // 等待页面渲染完成
+		chromedp.Navigate(url),  // 导航到指定的 URL
+		chromedp.Sleep(timeout), // 等待页面渲染完成
+		chromedp.OuterHTML("html", &pageHTML),
 		chromedp.Title(&pageTitle), // 获取页面标题
 	); err != nil {
 		return "", "", err
 	}
-	// 等待监听器完成
-	// log.Info("指纹:" + utils.FingersEngine(url, []byte(pageHTML)))
-	// log.Info("指纹:" + utils.FingersEngine2(url))
 	return pageTitle, pageHTML, nil
 }
 
@@ -132,7 +130,6 @@ func listenForNetworkEvent(ctx context.Context) {
 							result.JsLinks = append(result.JsLinks, mode.Link{Url: tmp_url, Fingers: utils.FingersEngine3(respx)})
 							log.Infof("%s指纹：%s", tmp_url, utils.FingersEngine3(respx))
 						} else {
-							// if
 							log.Debugf("其他uri：%s", tmp_url)
 						}
 					}
